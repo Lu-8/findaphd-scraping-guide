@@ -2,6 +2,8 @@
 
 使用 ego-browser 多空间并行爬取 findaphd.com 的 PhD 招聘信息，自动转换为 [PhDRadar](https://pingfanfan.github.io/PhDRadar/) 格式。
 
+> 📖 **在线操作指南**：https://lu-8.github.io/findaphd-scraping-guide/
+
 ## 功能
 
 - ✅ 多空间并行爬取（3 个 worker 同时运行）
@@ -19,6 +21,12 @@
 # 或直接运行
 ego-browser nodejs -e "await import('file:///C:/path/to/scraper.mjs')"
 ```
+
+## 效果截图
+
+![搜索页](assets/screenshots/01-search-page.png)
+
+![项目详情页](assets/screenshots/03-project-detail.png)
 
 ## 文件说明
 
@@ -38,4 +46,4 @@ ego-browser nodejs -e "await import('file:///C:/path/to/scraper.mjs')"
 
 ## 每日自动化
 
-详见 `index.html` 第八节，使用 Windows 任务计划程序配置每天自动运行。
+详见 [在线操作指南](https://lu-8.github.io/findaphd-scraping-guide/) 第八节，使用 Windows 任务计划程序配置每天自动运行。
