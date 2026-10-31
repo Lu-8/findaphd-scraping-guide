@@ -7,7 +7,7 @@
 | 文件 | 说明 |
 |------|------|
 | `AI-Guide.md` | 给 AI 看的技术文档（简洁版），包含环境、流程、选择器、踩坑记录 |
-| `操作指南.html` | 给人看的图文操作指南，含截图和代码示例 |
+| `index.html` | 给人看的图文操作指南（HTML），含截图和代码示例 |
 | `assets/screenshots/` | 操作过程截图（搜索页、项目详情页等） |
 | `assets/data/sample-phd.json` | 爬取的单个 PhD 项目完整数据样例 |
 
@@ -19,7 +19,11 @@
 
 ## 快速开始
 
-直接在浏览器中打开 `操作指南.html` 即可查看完整操作步骤。
+**在线查看操作指南（推荐）**：直接访问 GitHub Pages 渲染的页面：
+
+👉 https://lu-8.github.io/findaphd-scraping-guide/
+
+也可以下载 `index.html` 到本地用浏览器打开。
 
 ## 数据样例
 
