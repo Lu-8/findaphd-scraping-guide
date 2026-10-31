@@ -1,41 +1,41 @@
 # FindAPhD 数据爬取指南
 
-使用浏览器自动化从 [findaphd.com](https://www.findaphd.com/) 爬取 PhD 招聘信息的完整技术文档与操作指南。
+使用 ego-browser 多空间并行爬取 findaphd.com 的 PhD 招聘信息，自动转换为 [PhDRadar](https://pingfanfan.github.io/PhDRadar/) 格式。
 
-## 项目内容
+## 功能
 
-| 文件 | 说明 |
-|------|------|
-| `AI-Guide.md` | 给 AI 看的技术文档（简洁版），包含环境、流程、选择器、踩坑记录 |
-| `index.html` | 给人看的图文操作指南（HTML），含截图和代码示例 |
-| `assets/screenshots/` | 操作过程截图（搜索页、项目详情页等） |
-| `assets/data/sample-phd.json` | 爬取的单个 PhD 项目完整数据样例 |
-
-## 技术栈
-
-- **浏览器**：ego-browser（ego-lite，基于 Chromium）
-- **驱动**：Trae AI Agent
-- **目标站点**：https://www.findaphd.com/
+- ✅ 多空间并行爬取（3 个 worker 同时运行）
+- ✅ 自动绕过 Cloudflare 防护
+- ✅ 自动转换为 PhDRadar jobs.csv 格式
+- ✅ 输出 JSON + CSV 两种格式
+- ✅ 支持 Windows 任务计划程序每日自动运行
 
 ## 快速开始
 
-**在线查看操作指南（推荐）**：直接访问 GitHub Pages 渲染的页面：
+```powershell
+# 一键爬取
+.\run-scraper.ps1
 
-👉 https://lu-8.github.io/findaphd-scraping-guide/
-
-也可以下载 `index.html` 到本地用浏览器打开。
-
-## 数据样例
-
-```json
-{
-  "title": "Light at the Atomic Scale: A PhD in Single-Molecule Nanophotonics",
-  "university": "University of Birmingham",
-  "school": "School of Physics and Astronomy",
-  "supervisor": "Dr Rohit Chikkaraddy",
-  "deadline": "Tuesday, January 12, 2027",
-  "fundingType": "Funded PhD Project (UK Students Only)",
-  "location": "Birmingham, United Kingdom",
-  "subjects": ["Acoustics", "Astrophysics", "Electromagnetism", ...]
-}
+# 或直接运行
+ego-browser nodejs -e "await import('file:///C:/path/to/scraper.mjs')"
 ```
+
+## 文件说明
+
+| 文件 | 用途 |
+|------|------|
+| `scraper.mjs` | 多空间并行爬虫主脚本 |
+| `run-scraper.ps1` | Windows 一键启动脚本 |
+| `AI-Guide.md` | 给 AI 看的技术文档 |
+| `index.html` | 给人看的图文操作指南 |
+| `data/sample-phdradar-jobs.csv` | 爬取样例（PhDRadar 格式） |
+| `data/sample-phdradar-jobs.json` | 同上 JSON 版 |
+| `assets/screenshots/` | 操作截图 |
+
+## 测试结果
+
+3 个 Worker × 5 条 URL = **15 条全部成功，0 错误**
+
+## 每日自动化
+
+详见 `index.html` 第八节，使用 Windows 任务计划程序配置每天自动运行。

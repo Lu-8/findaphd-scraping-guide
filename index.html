@@ -322,8 +322,8 @@ await task.finish({ keep: [] });  // 关闭任务空间</code></pre>
   <section>
     <h2>六、常见问题与避坑</h2>
     <div class="callout warn">
-      <strong>❌ 列表页结果为空：</strong>findaphd.com 的 <code>/phds/</code> 列表页结果由客户端 JS 动态渲染，<code>page.evaluate()</code> 直接查询 DOM 拿不到数据。<br>
-      <strong>✅ 解决方案：</strong>从首页「Latest PhDs」或学科分类页获取项目链接，逐个访问详情页提取。
+      <strong>❌ Cloudflare 挑战不通过：</strong>直接访问内页（如 <code>/phds/latest/</code>）会触发 "Just a moment..." 且无法自动通过。<br>
+      <strong>✅ 解决方案：</strong>每个浏览器空间先访问首页 <code>https://www.findaphd.com/</code>，等待标题正常后再跳转目标页。首页挑战会自动通过。
     </div>
     <div class="callout warn">
       <strong>❌ 项目描述混入 JS 代码：</strong>遍历 <code>nextElementSibling</code> 时可能抓到 <code>&lt;script&gt;</code> 标签。<br>
@@ -335,15 +335,57 @@ await task.finish({ keep: [] });  // 关闭任务空间</code></pre>
   </section>
 
   <section>
-    <h2>七、批量爬取扩展</h2>
-    <p>如需爬取全部 PhD 岗位，可按以下流程扩展：</p>
+    <h2>七、自动化批量爬取（多空间并行）</h2>
+    <p>已实现 <strong>多空间并行爬取</strong>，可批量获取 PhD 数据并自动转换为 PhDRadar 格式。</p>
+
+    <h3>工作原理</h3>
     <ol>
-      <li>访问 <code>/phds/latest/</code> 获取最新项目链接列表</li>
-      <li>或按学科分类页（如 <code>/phds/biological-sciences/</code>）逐个获取链接</li>
-      <li>对每个项目 URL 复用本指南的提取逻辑</li>
-      <li>每爬取 10 条保存一次 JSON，避免中途中断丢失数据</li>
-      <li>注意控制请求频率，避免对网站造成过大压力</li>
+      <li><strong>列表空间</strong>：访问 <code>/phds/latest/</code> 获取所有项目链接</li>
+      <li><strong>多个 Worker 空间</strong>：每个空间独立浏览器，并行处理一批 URL</li>
+      <li><strong>数据转换</strong>：自动映射为 PhDRadar 格式（CSV/JSON）</li>
     </ol>
+
+    <div class="result-card">
+      <div class="field"><div class="label">测试结果</div><div class="value">3 个 Worker × 5 条 = 15 条全部成功，0 错误</div></div>
+      <div class="field"><div class="label">输出文件</div><div class="value">raw-results.json、phdradar-jobs.json、phdradar-jobs.csv</div></div>
+      <div class="field"><div class="label">数据格式</div><div class="value">level, eligibility, funding, title, institution, country, city, deadline, posted, source, url, flags, fetched_at</div></div>
+    </div>
+
+    <h3>一键运行</h3>
+    <pre><code># 方式1：启动脚本
+.\run-scraper.ps1
+
+# 方式2：直接运行
+ego-browser nodejs -e "await import('file:///C:/path/to/scraper.mjs')"</code></pre>
+
+    <h3>字段映射（findaphd → PhDRadar）</h3>
+    <div class="table-wrap">
+      <table>
+        <tr><th>findaphd 字段</th><th>PhDRadar 字段</th><th>转换方式</th></tr>
+        <tr><td>—</td><td>level</td><td>固定 phd</td></tr>
+        <tr><td>fundingType</td><td>eligibility</td><td>UK only / International / check</td></tr>
+        <tr><td>title</td><td>title</td><td>原文</td></tr>
+        <tr><td>university</td><td>institution</td><td>原文</td></tr>
+        <tr><td>city, country</td><td>city, country</td><td>原文</td></tr>
+        <tr><td>deadline</td><td>deadline</td><td>转 YYYY-MM-DD</td></tr>
+        <tr><td>subjects</td><td>flags</td><td>用 ; 连接</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>八、每日自动爬取配置</h2>
+    <p>使用 Windows 任务计划程序实现每天自动运行：</p>
+    <ol>
+      <li>打开「任务计划程序」→ 创建基本任务</li>
+      <li>触发器：每天（建议 09:00）</li>
+      <li>操作：启动程序 <code>powershell.exe</code></li>
+      <li>参数：<code>-ExecutionPolicy Bypass -File "C:\path\to\run-scraper.ps1"</code></li>
+      <li>爬取结果自动保存到 <code>data/</code> 目录</li>
+    </ol>
+    <div class="callout tip">
+      <strong>💡 提示：</strong>也可以配合 Git 自动提交，把每天的爬取结果推送到 GitHub 仓库，实现数据的持续积累。
+    </div>
   </section>
 
   <footer>
